@@ -1,0 +1,73 @@
+#define _XTAL_FREQ 20000000
+
+#include <xc.h>
+#include "uart.h"
+#include <pic16f877a.h>
+
+int count = 0;
+
+void interrupt tempo(){
+    char resposta;
+     nRBPU = 0;//ativa os resistores de PULL-UP
+    UART_Init(9600);//inicializa serial com baud rate de 9600
+     if(UART_Data_Ready()){
+            resposta = UART_Read();
+            UART_Write(resposta);
+    while(1){
+        UART_Write('a');
+    } 
+    if(INTCONbits.TMR0IF){ //Verifica o flag
+        INTCONbits.TMR0IF=0; // Zera o flag
+        count++;
+        if(count==76){
+            count=0;
+            PORTD=~PORTD;        
+    }   
+   }
+    __delay_ms(100);
+  }
+    if(UART_Data_Ready()){
+            resposta = UART_Read();
+            UART_Write(resposta);
+  while(1){
+        UART_Write('a');
+    if(INTCONbits.TMR0IF){ 
+        INTCONbits.TMR0IF=0; 
+        count--;
+        if(count==76){
+            count=0;
+            PORTD=~PORTD;
+      }      
+     } 
+     __delay_ms(100);
+    }
+     if(UART_Data_Ready()){
+            resposta = UART_Read();
+            UART_Write(resposta);
+  while(1){
+        UART_Write('');
+  }
+     }
+
+void main(){
+
+    TRISD = 0x00;
+    PORTD = 0x00;
+    INTCONbits.GIE = 1;
+    INTCONbits.PEIE = 1;
+    INTCONbits.TMR0IE = 1;
+    INTCONbits.TMR0IF = 0;
+    ei(); 
+    OPTION_REGbits.T0CS=0;
+    OPTION_REGbits.T0SE=0;
+    OPTION_REGbits.PSA=0; 
+    OPTION_REGbits.PS0=1; 
+    OPTION_REGbits.PS1=1;
+    OPTION_REGbits.PS2=1;
+     
+    while(1){
+    
+   }
+ }
+}
+}
